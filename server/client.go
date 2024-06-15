@@ -76,8 +76,7 @@ func (client *Client) readLoop() {
 		}
 
 		mutex.Lock()
-		playerData.ID = client.ID // クライアントのIDでプレイヤーデータのIDを更新
-		players[client.ID] = playerData
+		players[playerData.ID] = playerData
 		mutex.Unlock()
 	}
 }
