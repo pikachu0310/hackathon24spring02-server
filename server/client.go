@@ -96,7 +96,7 @@ func (client *Client) writeLoop() {
 }
 
 func handleMessages() {
-	ticker := time.NewTicker(time.Second / 30)
+	ticker := time.NewTicker(time.Second / 40)
 	defer ticker.Stop()
 
 	for {
