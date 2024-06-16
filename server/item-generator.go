@@ -11,7 +11,7 @@ import (
 	"github/pikachu0310/hackathon24spring-server/domain"
 )
 
-const apiURL = "https://online-data.trap.games/"
+const apiURL = "https://online-data.trap.games/api/items"
 
 func generateRandomPosition() domain.Vector3 {
 	return domain.Vector3{
