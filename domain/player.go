@@ -25,12 +25,17 @@ type PlayerData struct {
 }
 
 type ItemData struct {
-	Type        string `json:"type"`
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Attribute   int    `json:"attribute"`
-	Rarity      int    `json:"rarity"`
+	Type        string  `json:"type"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Attribute   int     `json:"attribute"`
+	Rarity      int     `json:"rarity"`
+	Position    Vector3 `json:"position"`
+	Speed       Vector3 `json:"speed"`
+	Rotation    float32 `json:"rotation"`
+	Size        float32 `json:"size"`
+	Mass        float32 `json:"mass"`
 }
 
 type BulletData struct {
@@ -41,4 +46,5 @@ type BulletData struct {
 	RemainingTime float32 `json:"remainingTime"`
 	Attack        float32 `json:"attack"`
 	Size          float32 `json:"size"`
+	ShooterID     string  `json:"shooterID"`
 }
