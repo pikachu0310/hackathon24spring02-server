@@ -183,4 +183,5 @@ func generateID() string {
 
 func init() {
 	go handleMessages()
+	go generateItems()
 }
