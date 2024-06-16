@@ -55,7 +55,7 @@ func generateItems() {
 
 	for range ticker.C {
 		mutex.Lock()
-		if len(items) >= 5 {
+		if len(items) >= 30 {
 			mutex.Unlock()
 			continue
 		}
