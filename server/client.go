@@ -125,7 +125,7 @@ func (client *Client) writeLoop() {
 }
 
 func handleMessages() {
-	ticker := time.NewTicker(time.Second / 40)
+	ticker := time.NewTicker(time.Second / 10)
 	defer ticker.Stop()
 
 	for {
@@ -164,6 +164,9 @@ func handleMessages() {
 			mutex.Unlock()
 			continue
 		}
+
+		// reset bullets
+		bullets = make(map[string]domain.BulletData)
 
 		for client := range clients {
 			client.send <- playerDataJSON
