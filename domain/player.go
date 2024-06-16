@@ -12,6 +12,7 @@ type PlayerData struct {
 	Name       string  `json:"name"`
 	Position   Vector3 `json:"position"`
 	Speed      Vector3 `json:"speed"`
+	Rotation   float32 `json:"rotation"`
 	MaxHP      float32 `json:"maxHP"`
 	HP         float32 `json:"hp"`
 	Mass       float32 `json:"mass"`
