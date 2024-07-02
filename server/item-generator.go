@@ -55,7 +55,7 @@ func generateItems() {
 
 	for range ticker.C {
 		mutex.Lock()
-		if len(items) >= 30 {
+		if len(items) >= 5 {
 			mutex.Unlock()
 			continue
 		}
@@ -89,7 +89,7 @@ func broadcastItems() {
 		return
 	}
 
-	for client := range clients {
+	for _, client := range clients {
 		client.send <- itemDataJSON
 	}
 }
