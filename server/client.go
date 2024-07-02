@@ -17,7 +17,7 @@ type Client struct {
 	send chan []byte
 }
 
-var clients = make(map[*Client]bool)
+var clients = make(map[string]*Client)
 var players = make(map[string]domain.PlayerData)
 var items = make(map[string]domain.ItemData)
 var bullets = make(map[string]domain.BulletData)
@@ -40,14 +40,15 @@ func NewClient(ws *websocket.Conn) *Client {
 func AddClient(client *Client) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	clients[client] = true
+	clients[client.ID] = client
+	fmt.Println("New client connected: " + client.ID)
 }
 
 func RemoveClient(client *Client) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	if _, ok := clients[client]; ok {
-		delete(clients, client)
+	if _, ok := clients[client.ID]; ok {
+		delete(clients, client.ID)
 		close(client.send)
 
 		// clientIDToPlayerIDからplayerIDを取得し、playersから削除
@@ -55,11 +56,13 @@ func RemoveClient(client *Client) {
 			delete(players, playerID)
 			delete(clientIDToPlayerID, client.ID)
 		}
+
+		fmt.Println("Client disconnected: " + client.ID)
 	}
 }
 
 func (client *Client) SendText(text string) {
-	fmt.Println("[SEND] " + text)
+	//fmt.Println("[SEND] " + text)
 	client.send <- []byte(text)
 }
 
@@ -75,7 +78,7 @@ func (client *Client) readLoop() {
 			log.Printf("Error reading message: %v", err)
 			break
 		}
-		fmt.Println("[RECEIVE] " + string(data))
+		//fmt.Println("[RECEIVE] " + string(data))
 
 		var base struct {
 			Type string `json:"type"`
@@ -175,7 +178,7 @@ func handleMessages() {
 		// reset bullets
 		bullets = make(map[string]domain.BulletData)
 
-		for client := range clients {
+		for _, client := range clients {
 			client.send <- playerDataJSON
 			client.send <- itemDataJSON
 			client.send <- bulletDataJSON
