@@ -21,6 +21,7 @@ var clients = make(map[*Client]bool)
 var players = make(map[string]domain.PlayerData)
 var items = make(map[string]domain.ItemData)
 var bullets = make(map[string]domain.BulletData)
+var clientIDToPlayerID = make(map[string]string)
 var mutex = &sync.Mutex{}
 
 func NewClient(ws *websocket.Conn) *Client {
@@ -48,7 +49,12 @@ func RemoveClient(client *Client) {
 	if _, ok := clients[client]; ok {
 		delete(clients, client)
 		close(client.send)
-		delete(players, client.ID)
+
+		// clientIDToPlayerIDからplayerIDを取得し、playersから削除
+		if playerID, ok := clientIDToPlayerID[client.ID]; ok {
+			delete(players, playerID)
+			delete(clientIDToPlayerID, client.ID)
+		}
 	}
 }
 
@@ -88,6 +94,7 @@ func (client *Client) readLoop() {
 			}
 			mutex.Lock()
 			players[playerData.ID] = playerData
+			clientIDToPlayerID[client.ID] = playerData.ID // clientIDとplayerIDを紐づける
 			mutex.Unlock()
 		case "item":
 			var itemData domain.ItemData
