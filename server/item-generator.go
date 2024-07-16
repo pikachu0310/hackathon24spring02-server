@@ -75,7 +75,7 @@ func generateItems() {
 	}
 }
 
-func broadcastItems() {
+func broadcastItems() { // iranaikamo
 	mutex.Lock()
 	defer mutex.Unlock()
 
@@ -90,6 +90,8 @@ func broadcastItems() {
 	}
 
 	for _, client := range clients {
-		client.send <- itemDataJSON
+		if client.initialized {
+			client.send <- itemDataJSON
+		}
 	}
 }

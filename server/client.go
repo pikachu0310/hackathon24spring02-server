@@ -12,9 +12,10 @@ import (
 )
 
 type Client struct {
-	Ws   *websocket.Conn
-	ID   string
-	send chan []byte
+	Ws          *websocket.Conn
+	ID          string
+	send        chan []byte
+	initialized bool
 }
 
 var clients = make(map[string]*Client)
@@ -26,13 +27,15 @@ var mutex = &sync.Mutex{}
 
 func NewClient(ws *websocket.Conn) *Client {
 	client := &Client{
-		Ws:   ws,
-		ID:   generateID(),
-		send: make(chan []byte),
+		Ws:          ws,
+		ID:          generateID(),
+		send:        make(chan []byte),
+		initialized: false,
 	}
 
 	go client.readLoop()
 	go client.writeLoop()
+	go client.initialize()
 
 	return client
 }
@@ -134,8 +137,13 @@ func (client *Client) writeLoop() {
 	}
 }
 
+func (client *Client) initialize() {
+	time.Sleep(3 * time.Second)
+	client.initialized = true
+}
+
 func handleMessages() {
-	ticker := time.NewTicker(time.Second / 10)
+	ticker := time.NewTicker(time.Second / 30)
 	defer ticker.Stop()
 
 	for {
@@ -179,9 +187,11 @@ func handleMessages() {
 		bullets = make(map[string]domain.BulletData)
 
 		for _, client := range clients {
-			client.send <- playerDataJSON
-			client.send <- itemDataJSON
-			client.send <- bulletDataJSON
+			if client.initialized {
+				client.send <- playerDataJSON
+				client.send <- itemDataJSON
+				client.send <- bulletDataJSON
+			}
 		}
 		mutex.Unlock()
 	}
