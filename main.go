@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github/pikachu0310/hackathon24spring-server/server"
 	"log"
+	"net"
 	"net/http"
 )
 
@@ -30,5 +31,12 @@ func HandleConnectionRequest(c echo.Context) error {
 func main() {
 	e := echo.New()
 	e.GET("/ws", HandleConnectionRequest)
-	log.Fatal(e.Start(":1729"))
+
+	// IPv4とIPv6の両方でリッスンする
+	listener, err := net.Listen("tcp", "[::]:1729")
+	if err != nil {
+		log.Fatalf("Failed to create listener: %v", err)
+	}
+
+	log.Fatal(http.Serve(listener, e))
 }
