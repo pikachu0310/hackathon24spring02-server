@@ -33,6 +33,13 @@ func NewClient(ws *websocket.Conn) *Client {
 		initialized: false,
 	}
 
+	// Closeハンドラの設定
+	ws.SetCloseHandler(func(code int, text string) error {
+		log.Printf("WebSocket closed with code %d and message %s", code, text)
+		RemoveClient(client)
+		return nil
+	})
+
 	go client.readLoop()
 	go client.writeLoop()
 	go client.initialize()
