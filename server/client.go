@@ -88,8 +88,8 @@ func (client *Client) readLoop() {
 			log.Printf("Error reading message: %v", err)
 			break
 		}
+		//fmt.Println("[RECEIVE] " + string(data))
 
-		// メッセージの種類を判定
 		var base struct {
 			Type string `json:"type"`
 		}
@@ -98,7 +98,6 @@ func (client *Client) readLoop() {
 			continue
 		}
 
-		// データを更新し、他のクライアントにブロードキャスト
 		switch base.Type {
 		case "player":
 			var playerData domain.PlayerData
@@ -110,10 +109,6 @@ func (client *Client) readLoop() {
 			players[playerData.ID] = playerData
 			clientIDToPlayerID[client.ID] = playerData.ID // clientIDとplayerIDを紐づける
 			mutex.Unlock()
-
-			// 他のクライアントに送信
-			broadcastToOthers(client, data)
-
 		case "item":
 			var itemData domain.ItemData
 			if err := json.Unmarshal(data, &itemData); err != nil {
@@ -123,10 +118,6 @@ func (client *Client) readLoop() {
 			mutex.Lock()
 			items[itemData.ID] = itemData
 			mutex.Unlock()
-
-			// 他のクライアントに送信
-			broadcastToOthers(client, data)
-
 		case "bullet":
 			var bulletData domain.BulletData
 			if err := json.Unmarshal(data, &bulletData); err != nil {
@@ -136,25 +127,6 @@ func (client *Client) readLoop() {
 			mutex.Lock()
 			bullets[bulletData.ID] = bulletData
 			mutex.Unlock()
-
-			// 他のクライアントに送信
-			broadcastToOthers(client, data)
-		}
-	}
-}
-
-func broadcastToOthers(sender *Client, message []byte) {
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	for _, client := range clients {
-		if client.ID != sender.ID {
-			select {
-			case client.send <- message:
-			default:
-				// 送信チャンネルが詰まっている場合はクライアントを削除
-				go RemoveClient(client)
-			}
 		}
 	}
 }
