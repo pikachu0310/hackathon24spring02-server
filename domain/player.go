@@ -22,6 +22,7 @@ type PlayerData struct {
 	Score      int     `json:"score"`
 	GrabTarget string  `json:"grabTarget"`
 	GrabLength float32 `json:"grabLength"`
+	KillerID   string  `json:"killerID"`
 }
 
 type ItemData struct {
