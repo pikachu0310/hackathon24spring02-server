@@ -13,6 +13,10 @@ import (
 
 const apiURL = "https://online-data.trap.games/api/items"
 
+func init() {
+	go generateItems()
+}
+
 func generateRandomPosition() domain.Vector3 {
 	return domain.Vector3{
 		X: rand.Float32()*20 - 10,
@@ -39,12 +43,11 @@ func fetchItemFromAPI() (domain.ItemData, error) {
 
 	item.Type = "item"
 	item.Position = generateRandomPosition()
-	//item.Rotation = rand.Float32() * 360
 	item.Rotation = 0
 	size := (rand.Float32() + 0.5) * 0.25
 	item.Size = size
 	item.Mass = size * 5
-	item.Speed = domain.Vector3{X: 0, Y: 0, Z: 0} // 初期速度はゼロ
+	item.Speed = domain.Vector3{X: 0, Y: 0, Z: 0}
 
 	return item, nil
 }
@@ -54,12 +57,12 @@ func generateItems() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		mutex.Lock()
+		clientMutex.Lock()
 		if len(items) >= 5 {
-			mutex.Unlock()
+			clientMutex.Unlock()
 			continue
 		}
-		mutex.Unlock()
+		clientMutex.Unlock()
 
 		item, err := fetchItemFromAPI()
 		if err != nil {
@@ -67,31 +70,10 @@ func generateItems() {
 			continue
 		}
 
-		mutex.Lock()
-		items[item.ID] = item
-		mutex.Unlock()
+		// 状態管理ファイルにアイテムをセット
+		SetItem(item)
 
-		broadcastItems()
-	}
-}
-
-func broadcastItems() { // iranaikamo
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	itemList := make([]domain.ItemData, 0, len(items))
-	for _, item := range items {
-		itemList = append(itemList, item)
-	}
-	itemDataJSON, err := json.Marshal(itemList)
-	if err != nil {
-		log.Printf("Error marshalling item data: %v", err)
-		return
-	}
-
-	for _, client := range clients {
-		if client.initialized {
-			client.send <- itemDataJSON
-		}
+		// アイテム情報をブロードキャスト
+		broadcastItemUpdate(item)
 	}
 }
