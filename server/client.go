@@ -58,4 +58,5 @@ func RemoveClient(client *Client) {
 		}
 		close(client.send)
 	}
+	fmt.Println("Client disconnected: " + client.ID)
 }
