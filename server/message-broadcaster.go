@@ -38,7 +38,7 @@ func broadcastBulletUpdate(bulletData domain.BulletData) {
 		return
 	}
 
-	sendToOtherClientByPlayerID(bulletDataJSON, bulletData.ShooterID)
+	sendToAllClients(bulletDataJSON)
 }
 
 // 全クライアントにデータを送信
