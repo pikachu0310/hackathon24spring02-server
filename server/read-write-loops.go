@@ -30,10 +30,20 @@ func clientWriteLoop(client *Client) {
 		select {
 		case message, ok := <-client.send:
 			if !ok {
+				// チャンネルがクローズされた場合、WebSocketを閉じる
+				log.Println("Client send channel closed")
 				client.Ws.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-			client.Ws.WriteMessage(websocket.TextMessage, message)
+
+			// メッセージを送信
+			err := client.Ws.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				// エラーが発生した場合
+				log.Printf("Error sending message to client %s: %v", client.ID, err)
+				return
+			}
+			log.Printf("Message sent to client %s", client.ID)
 		}
 	}
 }
