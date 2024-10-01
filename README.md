@@ -1,5 +1,6 @@
 # Hackathon24spring02 Realtime Server(WebSocket)
 WebSocketを用いたオンラインゲームのリアルタイム通信サーバーです。
+イベント駆動型アーキテクチャに書き直しました。
 
 ## 概要
 ```
