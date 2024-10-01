@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github/pikachu0310/hackathon24spring-server/domain"
 	"log"
 )
@@ -28,7 +27,6 @@ func handleMessage(data []byte, client *Client) {
 }
 
 func handlePlayerMessage(data []byte, client *Client) {
-	fmt.Println("handlePlayerMessageReceived:" + string(data))
 	var playerData domain.PlayerData
 	if err := json.Unmarshal(data, &playerData); err != nil {
 		log.Printf("Error unmarshalling player data: %v", err)

@@ -2,14 +2,12 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github/pikachu0310/hackathon24spring-server/domain"
 	"log"
 )
 
 // プレイヤー情報の送信
 func broadcastPlayerUpdate(playerData domain.PlayerData) {
-	fmt.Println("broadcastPlayerUpdate:" + playerData.ID)
 	playerDataJSON, err := json.Marshal(playerData)
 	if err != nil {
 		log.Printf("Error marshalling player data: %v", err)
@@ -38,7 +36,7 @@ func broadcastBulletUpdate(bulletData domain.BulletData) {
 		return
 	}
 
-	sendToAllClients(bulletDataJSON)
+	sendToOtherClientByPlayerID(bulletDataJSON, bulletData.ShooterID)
 }
 
 // 全クライアントにデータを送信
@@ -60,7 +58,6 @@ func sendToOtherClientByPlayerID(message []byte, playerID string) {
 
 	for _, client := range clients {
 		if clientIDToPlayerID[client.ID] != playerID && client.initialized {
-			fmt.Println("sendToOtherClientByPlayerID:" + playerID)
 			client.send <- message
 		}
 	}

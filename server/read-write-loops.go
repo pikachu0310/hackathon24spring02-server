@@ -43,7 +43,6 @@ func clientWriteLoop(client *Client) {
 				log.Printf("Error sending message to client %s: %v", client.ID, err)
 				return
 			}
-			log.Printf("Message sent to client %s", client.ID)
 		}
 	}
 }
