@@ -37,6 +37,7 @@ type ItemData struct {
 	Rotation    float32 `json:"rotation"`
 	Size        float32 `json:"size"`
 	Mass        float32 `json:"mass"`
+	LastTouched string  `json:"lastTouched"`
 }
 
 type BulletData struct {

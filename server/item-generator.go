@@ -53,10 +53,18 @@ func fetchItemFromAPI() (domain.ItemData, error) {
 }
 
 func generateItems() {
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 
 	for range ticker.C {
+		// すべてのアイテムの中で、lastTouchedが""なものだけ配信する
+		for _, item := range GetAllItems() {
+			if item.LastTouched == "" {
+				broadcastItemUpdate(item)
+			}
+		}
+
+		// アイテムが5つ以上あれば生成しない
 		clientMutex.Lock()
 		if len(items) >= 5 {
 			clientMutex.Unlock()
