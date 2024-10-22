@@ -23,6 +23,8 @@ func handleMessage(data []byte, client *Client) {
 		handleItemMessage(data)
 	case "bullet":
 		handleBulletMessage(data)
+	case "kill":
+		handleKillMessage(data)
 	}
 }
 
@@ -67,4 +69,18 @@ func handleBulletMessage(data []byte) {
 
 	// 弾丸情報を送信
 	broadcastBulletUpdate(bulletData)
+}
+
+// 新しいキルイベントを処理する関数
+func handleKillMessage(data []byte) {
+	var killData domain.KillData
+
+	if err := json.Unmarshal(data, &killData); err != nil {
+		log.Printf("Error unmarshalling kill data: %v", err)
+		return
+	}
+
+	log.Printf("Player %s was killed by Player %s", killData.KilledPlayerID, killData.KillerPlayerID)
+
+	broadcastKillEvent(killData)
 }

@@ -39,6 +39,16 @@ func broadcastBulletUpdate(bulletData domain.BulletData) {
 	sendToOtherClientByPlayerID(bulletDataJSON, bulletData.ShooterID)
 }
 
+func broadcastKillEvent(killData domain.KillData) {
+	killDataJSON, err := json.Marshal(killData)
+	if err != nil {
+		log.Printf("Error marshalling kill data: %v", err)
+		return
+	}
+
+	sendToAllClients(killDataJSON)
+}
+
 // 全クライアントにデータを送信
 func sendToAllClients(message []byte) {
 	clientMutex.Lock()

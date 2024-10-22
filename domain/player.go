@@ -49,3 +49,8 @@ type BulletData struct {
 	Size          float32 `json:"size"`
 	ShooterID     string  `json:"shooterID"`
 }
+
+type KillData struct {
+	KilledPlayerID string `json:"killedPlayerID"`
+	KillerPlayerID string `json:"killerPlayerID"`
+}
